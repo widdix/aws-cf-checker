@@ -2,18 +2,22 @@ var fs = require("fs");
 var _ = require("underscore");
 
 function loadJSONFile(filename, cb) {
+  "use strict";
   fs.readFile(filename, {"encoding": "utf8"}, cb);
 }
 
 function parseJSON(json, cb) {
+  "use strict";
   cb(null, JSON.parse(json));
 }
 
 function clone(obj) {
+  "use strict";
   return JSON.parse(JSON.stringify(obj));
 }
 
 function mapTemplate(template, cb) {
+  "use strict";
   var objects = [];
   function mapper(part) {
     return function(object, logicalId) {
@@ -32,6 +36,7 @@ function mapTemplate(template, cb) {
 }
 
 function runChecks(objects, checks, cb) {
+  "use strict";
   var findings = [];
   function checkCallback(err, checkFindings) {
     if (err) {
@@ -49,6 +54,7 @@ function runChecks(objects, checks, cb) {
 }
 
 function checkTemplate(template, checks, cb) {
+  "use strict";
   mapTemplate(template, function(err, objects) {
     if (err) {
       cb(err);
@@ -61,6 +67,7 @@ function checkTemplate(template, checks, cb) {
 exports.checkTemplate = checkTemplate;
 
 exports.checkFile = function(filename, checks, cb) {
+  "use strict";
   loadJSONFile(filename, function(err, json) {
     if (err) {
       cb(err);

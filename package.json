@@ -16,7 +16,7 @@
     "assert-plus": "0.1.5",
     "mocha": "2.3.3",
     "jshint": "2.8.0",
-    "madge": "0.5.2",
+    "madge": "0.5.0",
     "npmedge": "0.2.2"
   },
   "repository": {
