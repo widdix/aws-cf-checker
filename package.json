@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/widdix/aws-cf-chcker.git"
+    "url": "https://github.com/widdix/aws-cf-checker.git"
   },
   "engines": {
     "node": ">=0.10"
