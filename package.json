@@ -10,7 +10,8 @@
   "author": "Michael Wittig <post@michaelwittig.info>",
   "license": "MIT",
   "dependencies": {
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "netmask": "1.0.5"
   },
   "devDependencies": {
     "assert-plus": "0.1.5",
