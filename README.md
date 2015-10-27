@@ -45,7 +45,7 @@ reading template from file
 ```javascript
 var checker = require("aws-cf-checker")
 
-checker.checkFile("./path/to/template.json", {"logicalID": {"case": "pascal"}}, function(err, findings) {
+checker.checkFile("./path/to/template.json", {"logicalID": {}}, function(err, findings) {
   if (err) {
     throw err;
   } else {
@@ -67,7 +67,7 @@ var template = {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "minimal template"
 };
-checker.checkFile(template, {"logicalID": {"case": "pascal"}}, function(err, findings) {
+checker.checkFile(template, {"logicalID": {}}, function(err, findings) {
   if (err) {
     throw err;
   } else {
