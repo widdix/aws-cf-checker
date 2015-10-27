@@ -1,5 +1,5 @@
 var fs = require("fs");
-var _ = require("underscore");
+var _ = require("lodash");
 
 function loadJSONFile(filename, cb) {
   "use strict";

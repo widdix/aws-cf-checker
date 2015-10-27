@@ -10,7 +10,7 @@
   "author": "Michael Wittig <post@michaelwittig.info>",
   "license": "MIT",
   "dependencies": {
-    "underscore": "1.8.3",
+    "lodash": "3.10.1",
     "netmask": "1.0.5"
   },
   "devDependencies": {
