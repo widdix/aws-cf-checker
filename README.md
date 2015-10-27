@@ -107,8 +107,29 @@ Options:
 
 ### securityGroupInbound
 
-Checks that only security groups attached to external load balancers allow traffic from public ip addresses.
-Security groups attached to internal load balancers, auto scaling groups (launch configuration), rds instances should only allow inbound traffic from other security groups or private ip addresses.
+Checks that only security groups attached to:
+
+* AWS::ElasticLoadBalancing::LoadBalancer (external)
+
+allow traffic from public ip addresses.
+
+Security groups attached to:
+
+* AWS::ElasticLoadBalancing::LoadBalancer (internal)
+* AWS::AutoScaling::LaunchConfiguration
+* AWS::EC2::Instance
+* AWS::EC2::SpotFleet
+* AWS::RDS::DBInstance
+* AWS::RDS::DBCluster
+* AWS::Redshift::Cluster
+* AWS::ElastiCache::CacheCluster
+* AWS::ElastiCache::ReplicationGroup
+* AWS::EFS::MountTarget
+* AWS::OpsWorks::Layer
+
+should only allow inbound traffic from other security groups or private ip addresses.
+
+Assumes that your account only supports the [EC2 platform](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html) EC2-VPC.
 
 Options:
 
