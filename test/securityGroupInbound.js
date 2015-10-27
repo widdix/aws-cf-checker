@@ -270,4 +270,49 @@ describe("securityGroupInbound", function() {
       }
     }, {"securityGroupInbound": true}, 1, done);
   });
+  it("secure RDS instance setup with external security group", function(done) {
+    test({
+      "Parameters": {
+        "SGDatabase": {
+          "Type": "AWS::EC2::SecurityGroup::Id",
+        }
+      },
+      "Resources": {
+        "Database": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+            "VPCSecurityGroups": [{"Ref": "SGDatabase"}]
+          }
+        }
+      }
+    }, {"securityGroupInbound": true}, 0, done);
+  });
+  it("secure RDS instance setup with external security group as source", function(done) {
+    test({
+      "Parameters": {
+        "SGDatabaseClient": {
+          "Type": "AWS::EC2::SecurityGroup::Id",
+        }
+      },
+      "Resources": {
+        "SGDatabase": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 3306,
+              "ToPort": 3306,
+              "IpProtocol": "tcp",
+              "SourceSecurityGroupId": {"Ref": "SGDatabaseClient"}
+            }]
+          }
+        },
+        "Database": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+            "VPCSecurityGroups": [{"Ref": "SGDatabase"}]
+          }
+        }
+      }
+    }, {"securityGroupInbound": true}, 0, done);
+  });
 });
