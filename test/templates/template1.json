@@ -169,11 +169,6 @@
 				"GroupDescription": "awsinaction-sg",
 				"VpcId": {"Ref": "VPC"},
 				"SecurityGroupIngress": [{
-					"CidrIp": "0.0.0.0/0",
-					"FromPort": 22,
-					"IpProtocol": "tcp",
-					"ToPort": 22
-				}, {
 					"FromPort": 80,
 					"IpProtocol": "tcp",
 					"SourceSecurityGroupId": {"Ref": "LoadBalancerSecurityGroup"},
@@ -205,7 +200,7 @@
 				"Engine": "MySQL",
 				"MasterUsername": "wordpress",
 				"MasterUserPassword": "wordpress",
-				"VPCSecurityGroups": [{"Fn::GetAtt": ["DatabaseSecurityGroup", "GroupId"]}],
+				"VPCSecurityGroups": [{"Ref": "DatabaseSecurityGroup"}],
 				"DBSubnetGroupName": {"Ref": "DBSubnetGroup"}
 			}
 		},

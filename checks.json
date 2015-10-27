@@ -1,0 +1,6 @@
+{
+  "logicalID": {
+    "case": "pascal"
+  },
+  "securityGroupInbound": true
+}

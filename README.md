@@ -1,5 +1,30 @@
 # AWS CloudFormation Checker
 
+## Installation
+
+```
+npm install cf-checker
+```
+
+## CLI Usage
+
+reading template from file
+
+```
+cf-checker --templateFile ./path/to/template.json
+
+cf-checker --templateFile ./path/to/template.json --checksFile ./path/to/checks.json
+```
+
+
+reading template from stdin
+
+```
+cat ./path/to/template.json | cf-checker
+
+cat ./path/to/template.json | cf-checker --checksFile ./path/to/checks.json
+```
+
 ## Checks
 
 ### logicalID

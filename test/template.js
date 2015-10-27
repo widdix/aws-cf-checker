@@ -5,7 +5,8 @@ describe("templates", function() {
   describe("template0", function() {
     it("check", function(done) {
       checker.checkFile("./test/templates/template0.json", {
-        "logicalID": true
+        "logicalID": true,
+        "securityGroupInbound": true
       }, function(err, findings) {
         if (err) {
           throw err;
@@ -19,7 +20,8 @@ describe("templates", function() {
   describe("template1", function() {
     it("check", function(done) {
       checker.checkFile("./test/templates/template1.json", {
-        "logicalID": true
+        "logicalID": true,
+        "securityGroupInbound": true
       }, function(err, findings) {
         if (err) {
           throw err;
