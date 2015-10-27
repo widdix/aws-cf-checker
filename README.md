@@ -1,3 +1,7 @@
+[![Build Status](https://secure.travis-ci.org/widdix/aws-cf-checker.png)](http://travis-ci.org/widdix/aws-cf-checker)
+[![NPM version](https://badge.fury.io/js/aws-cf-checker.png)](http://badge.fury.io/js/aws-cf-checker)
+[![NPM dependencies](https://david-dm.org/widdix/aws-cf-checker.png)](https://david-dm.org/widdix/aws-cf-checker)
+
 # AWS CloudFormation Checker
 
 ## Installation

@@ -7,7 +7,7 @@
   "scripts": {
     "test": "make test"
   },
-  "author": "Michael Wittig <post@michaelwittig.info>",
+  "author": "Michael Wittig <michael@widdix.de>",
   "license": "MIT",
   "dependencies": {
     "lodash": "3.10.1",
