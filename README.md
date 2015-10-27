@@ -117,6 +117,7 @@ Security groups attached to:
 
 * AWS::ElasticLoadBalancing::LoadBalancer (internal)
 * AWS::AutoScaling::LaunchConfiguration
+* AWS::EC2::NetworkInterface
 * AWS::EC2::Instance
 * AWS::EC2::SpotFleet
 * AWS::RDS::DBInstance
