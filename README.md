@@ -4,7 +4,9 @@
 
 # AWS CloudFormation Checker
 
-## CLI Usage
+## CLI usage
+
+install
 
 ```
 npm install cf-checker -g
@@ -18,7 +20,6 @@ cf-checker --templateFile ./path/to/template.json
 cf-checker --templateFile ./path/to/template.json --checksFile ./path/to/checks.json
 ```
 
-
 reading template from stdin
 
 ```
@@ -31,11 +32,15 @@ cat ./path/to/template.json | cf-checker --checksFile ./path/to/checks.json
 
 ### logicalID
 
+Checks logical ids of your template.
+
 Options:
 
 * `case`: Enum["pascal", "camel"]
 
 ### resourceType
+
+Checks if the resource types are allowed in the template.
 
 Options:
 
@@ -44,4 +49,8 @@ Options:
 
 ### securityGroupInbound
 
-Options
+Checks that only security groups attached to external load balancers allow traffic from public internet.
+
+Options:
+
+(none)
