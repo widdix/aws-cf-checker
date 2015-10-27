@@ -92,11 +92,13 @@ Checks logical ids of your template.
 
 Options:
 
-* `case`: Enum["pascal", "camel"]
+* `case`: Enum["pascal", "camel"] (default: "pascal")
 
 ### resourceType
 
 Checks if the resource types are allowed in the template.
+If you `deny` resource types everything that is not denied is allowed.
+If you `allow` resource types everything that is not allowed is denied.
 
 Options:
 
@@ -105,7 +107,8 @@ Options:
 
 ### securityGroupInbound
 
-Checks that only security groups attached to external load balancers allow traffic from public internet.
+Checks that only security groups attached to external load balancers allow traffic from public ip addresses.
+Security groups attached to internal load balancers, auto scaling groups (launch configuration), rds instances should only allow inbound traffic from other security groups or private ip addresses.
 
 Options:
 
