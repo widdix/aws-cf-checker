@@ -65,6 +65,70 @@ describe("securityGroupInbound", function() {
       }
     }, {"securityGroupInbound": true}, 0, done);
   });
+  it("secure AutoScaling + LoadBalancer + RDS instance setup", function(done) {
+    test({
+      "Resources": {
+        "SGDatabase": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 3306,
+              "ToPort": 3306,
+              "IpProtocol": "tcp",
+              "SourceSecurityGroupId": {"Ref": "SGServer"}
+            }]
+          }
+        },
+        "SGServer": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 80,
+              "ToPort": 80,
+              "IpProtocol": "tcp",
+              "SourceSecurityGroupId": {"Ref": "SGLoadBalancer"}
+            }]
+          }
+        },
+        "SGLoadBalancer": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 80,
+              "ToPort": 80,
+              "IpProtocol": "tcp",
+              "CidrIp": "0.0.0.0/0"
+            }]
+          }
+        },
+        "LoadBalancer": {
+          "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+          "Properties": {
+            "SecurityGroups": [{"Ref": "SGLoadBalancer"}]
+          }
+        },
+        "AutoScalingGroup": {
+          "Type": "AWS::AutoScaling::AutoScalingGroup",
+          "Properties": {
+            "LaunchConfigurationName": {"Ref": "LaunchConfiguration"},
+            "LoadBalancerNames": [{"Ref": "LoadBalancer"}]
+          }
+        },
+        "LaunchConfiguration": {
+          "Type": "AWS::AutoScaling::LaunchConfiguration",
+          "Properties": {
+            "SecurityGroups": [{"Ref": "SGServer"}]
+          }
+        },
+        "Database": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+            "VPCSecurityGroups": [{"Ref": "SGDatabase"}]
+          }
+        }
+      }
+    }, {"securityGroupInbound": true}, 0, done);
+  });
   it("insecure AutoScaling + LoadBalancer setup", function(done) {
     test({
       "Resources": {
@@ -155,6 +219,52 @@ describe("securityGroupInbound", function() {
           "Properties": {
             "SecurityGroups": [{"Ref": "SGLoadBalancer"}],
             "Scheme": "internal"
+          }
+        }
+      }
+    }, {"securityGroupInbound": true}, 1, done);
+  });
+  it("secure RDS instance setup", function(done) {
+    test({
+      "Resources": {
+        "SGDatabase": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 3306,
+              "ToPort": 3306,
+              "IpProtocol": "tcp",
+              "CidrIp": "10.0.0.0/16"
+            }]
+          }
+        },
+        "Database": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+            "VPCSecurityGroups": [{"Ref": "SGDatabase"}]
+          }
+        }
+      }
+    }, {"securityGroupInbound": true}, 0, done);
+  });
+  it("insecure RDS instance setup", function(done) {
+    test({
+      "Resources": {
+        "SGDatabase": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "SecurityGroupIngress": [{
+              "FromPort": 3306,
+              "ToPort": 3306,
+              "IpProtocol": "tcp",
+              "CidrIp": "0.0.0.0/0"
+            }]
+          }
+        },
+        "Database": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+            "VPCSecurityGroups": [{"Ref": "SGDatabase"}]
           }
         }
       }
