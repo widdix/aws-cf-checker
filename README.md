@@ -4,7 +4,7 @@
 
 # AWS CloudFormation Checker
 
-Checks can guarantee high security, availability and conformity of your CloudFormation templates. We provide a set of default checks that you can use to validate your templates.
+Checks can guarantee high security, reliability and conformity of your CloudFormation templates. We provide a set of default checks that you can use to validate your templates.
 
 ## CLI usage
 

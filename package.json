@@ -1,7 +1,7 @@
 {
   "name": "aws-cf-checker",
-  "version": "0.1.0",
-  "description": "check AWS CloudFormation templates against certain rules",
+  "version": "0.1.1",
+  "description": "Checks AWS CloudFormation templates for security, reliability and conformity",
   "keywords": ["aws", "cloudformation", "cf"],
   "main": "index.js",
   "scripts": {
