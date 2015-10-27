@@ -4,13 +4,11 @@
 
 # AWS CloudFormation Checker
 
-## Installation
-
-```
-npm install cf-checker
-```
-
 ## CLI Usage
+
+```
+npm install cf-checker -g
+```
 
 reading template from file
 
