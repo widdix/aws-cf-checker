@@ -4,12 +4,14 @@
 
 # AWS CloudFormation Checker
 
+Checks can guarantee high security, availability and conformity of your CloudFormation templates. We provide a set of default checks that you can use to validate your templates.
+
 ## CLI usage
 
-install
+install the module globally
 
 ```
-npm install cf-checker -g
+npm install aws-cf-checker -g
 ```
 
 reading template from file
@@ -28,7 +30,61 @@ cat ./path/to/template.json | cf-checker
 cat ./path/to/template.json | cf-checker --checksFile ./path/to/checks.json
 ```
 
+as long as the exit code is `0` your template is fine
+
+## Programatic usage
+
+install the module locally
+
+```
+npm install aws-cf-checker
+```
+
+reading template from file
+
+```javascript
+var checker = require("aws-cf-checker")
+
+checker.checkFile("./path/to/template.json", {"logicalID": {"case": "pascal"}}, function(err, findings) {
+  if (err) {
+    throw err;
+  } else {
+    if (findings.length > 0) {
+      console.error("findings", findings);
+    } else {
+      console.log("no findings");
+    }
+  }
+});
+```
+
+using a template object
+
+```javascript
+var checker = require("aws-cf-checker")
+
+var template = {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "minimal template"
+};
+checker.checkFile(template, {"logicalID": {"case": "pascal"}}, function(err, findings) {
+  if (err) {
+    throw err;
+  } else {
+    if (findings.length > 0) {
+      console.error("findings", findings);
+    } else {
+      console.log("no findings");
+    }
+  }
+});
+```
+
+as long as the `findings` array is empty your template is fine
+
 ## Checks
+
+Checks are configured with a JSON file. Have a look at our [default checks](https://github.com/widdix/aws-cf-checker/blob/master/checks.json). 
 
 ### logicalID
 
@@ -53,4 +109,4 @@ Checks that only security groups attached to external load balancers allow traff
 
 Options:
 
-(none)
+* none
