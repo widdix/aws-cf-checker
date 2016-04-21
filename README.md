@@ -90,7 +90,7 @@ Checks are configured with a JSON file. Have a look at our [default checks](http
 
 Checks logical ids of your template.
 
-Options:
+Options: (Object)
 
 * `case`: Enum["pascal", "camel"] (default: "pascal")
 
@@ -100,7 +100,7 @@ Checks if the resource types are allowed in the template.
 If you `deny` resource types everything that is not denied is allowed.
 If you `allow` resource types everything that is not allowed is denied.
 
-Options:
+Options: (Object)
 
 * `deny`: Array[String]
 * `allow`: Array[String]
@@ -132,6 +132,26 @@ should only allow inbound traffic from other security groups or private ip addre
 
 Assumes that your account only supports the [EC2 platform](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html) EC2-VPC.
 
-Options:
+Options: (Object)
 
-* none
+none
+
+### iamInlinePolicy
+
+Checks IAM Users, Groups and Roles for inline policies.
+
+Options: (Boolean)
+
+`true` := inline policies are allowed
+`false` := inline policies are denied
+
+### iamPolicy
+
+Checks allowed actions of IAM policies.
+
+A statement with NotAction is a finding. A statement with Effect != Allow is skipped.
+
+Options: (Object)
+
+* `allow`: Array[String] List of allowed actions (whitelist)
+* `deny`: Array[String] List of denied actions (blacklist)

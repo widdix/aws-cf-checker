@@ -1,3 +1,11 @@
+/*
+Checks logical ids of your template.
+
+Options: (Object)
+
+* `case`: Enum["pascal", "camel"] (default: "pascal")
+*/
+
 var _ = require("lodash");
 
 var CASES = {

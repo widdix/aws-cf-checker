@@ -47,7 +47,7 @@ function runChecks(objects, checks, cb) {
   }
   for (var check in checks) {
     if (checks.hasOwnProperty(check)) {
-      require("./lib/" + check + ".js").check(objects, checks[check], checkCallback);
+      require("./check/" + check + ".js").check(objects, checks[check], checkCallback);
     }
   }
   cb(null, findings);
