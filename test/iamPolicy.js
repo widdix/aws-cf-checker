@@ -22,29 +22,8 @@ describe("iamPolicy", function() {
     }, {"iamPolicy": true}, 0, done);
   });
   describe("ManagedPolicy", function() {
-    it("NotAction is not allowed", function(done) {
-      test({
-        "Resources": {
-          "Test": {
-            "Type": "AWS::IAM::ManagedPolicy",
-            "Properties": {
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [{
-                  "Effect": "Allow",
-                  "NotAction": [
-                    "s3:PutObject"
-                  ],
-                  "Resource": "*"
-                }]
-              }
-            }
-          }
-        }
-      }, {"iamPolicy": {"allow": []}}, 1, done);
-    });
-    describe("allow", function() {
-      it("not allowed action in one statement with one action", function(done) {
+    describe("Resource", function() {
+      it("NotResource is not allowed", function(done) {
         test({
           "Resources": {
             "Test": {
@@ -57,15 +36,15 @@ describe("iamPolicy", function() {
                     "Action": [
                       "s3:PutObject"
                     ],
-                    "Resource": "*"
+                    "NotResource": "arn:aws:s3:::name-of-bucket"
                   }]
                 }
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"resource": {"allow": ["arn:aws:s3:::*"]}}}, 1, done);
       });
-      it("allowed action in one statement with one action", function(done) {
+      it("string", function(done) {
         test({
           "Resources": {
             "Test": {
@@ -74,89 +53,19 @@ describe("iamPolicy", function() {
                 "PolicyDocument": {
                   "Version": "2012-10-17",
                   "Statement": [{
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:GetObject"
-                    ],
-                    "Resource": "*"
-                  }]
-                }
-              }
-            }
-          }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 0, done);
-      });
-      it("allowed - but not used - action in one statement with one action", function(done) {
-        test({
-          "Resources": {
-            "Test": {
-              "Type": "AWS::IAM::ManagedPolicy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Version": "2012-10-17",
-                  "Statement": [{
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:GetObject"
-                    ],
-                    "Resource": "*"
-                  }]
-                }
-              }
-            }
-          }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
-      });
-      it("allowed actions in one statement with multiple actions", function(done) {
-        test({
-          "Resources": {
-            "Test": {
-              "Type": "AWS::IAM::ManagedPolicy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Version": "2012-10-17",
-                  "Statement": [{
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:GetObject",
-                      "s3:PutObject"
-                    ],
-                    "Resource": "*"
-                  }]
-                }
-              }
-            }
-          }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
-      });
-      it("allowed actions in multiple statements with one action", function(done) {
-        test({
-          "Resources": {
-            "Test": {
-              "Type": "AWS::IAM::ManagedPolicy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Version": "2012-10-17",
-                  "Statement": [{
-                    "Effect": "Allow",
-                    "Action": [
-                      "s3:GetObject"
-                    ],
-                    "Resource": "*"
-                  }, {
                     "Effect": "Allow",
                     "Action": [
                       "s3:PutObject"
                     ],
-                    "Resource": "*"
+                    "Resource": "arn:aws:s3:::name-of-bucket"
                   }]
                 }
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"resource": {"allow": ["arn:aws:s3:::*"]}}}, 0, done);
       });
-      it("ignore Effect = Deny", function(done) {
+      it("array", function(done) {
         test({
           "Resources": {
             "Test": {
@@ -165,21 +74,69 @@ describe("iamPolicy", function() {
                 "PolicyDocument": {
                   "Version": "2012-10-17",
                   "Statement": [{
-                    "Effect": "Deny",
+                    "Effect": "Allow",
                     "Action": [
-                      "s3:GetObject"
+                      "s3:PutObject"
                     ],
-                    "Resource": "*"
+                    "Resource": [
+                      "arn:aws:s3:::name-of-bucket"
+                    ]
                   }]
                 }
               }
             }
           }
-        }, {"iamPolicy": {"allow": []}}, 0, done);
+        }, {"iamPolicy": {"resource": {"allow": ["arn:aws:s3:::*"]}}}, 0, done);
+      });
+      describe("allow", function() {
+        it("allow specific s3 bucket", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "arn:aws:s3:::name-of-bucket"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"resource": {"allow": ["arn:aws:s3:::*"]}}}, 0, done);
+        });
+      });
+      describe("deny", function() {
+        it("deny all s3 buckets", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "arn:aws:s3:::name-of-bucket"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"resource": {"deny": ["arn:aws:s3:::*"]}}}, 1, done);
+        });
       });
     });
-    describe("deny", function() {
-      it("denied action in one statement with one action", function(done) {
+    describe("Action", function() {
+      it("NotAction is not allowed", function(done) {
         test({
           "Resources": {
             "Test": {
@@ -189,8 +146,8 @@ describe("iamPolicy", function() {
                   "Version": "2012-10-17",
                   "Statement": [{
                     "Effect": "Allow",
-                    "Action": [
-                      "s3:GetObject"
+                    "NotAction": [
+                      "s3:PutObject"
                     ],
                     "Resource": "*"
                   }]
@@ -198,9 +155,28 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:PutObject"]}}}, 1, done);
       });
-      it("not denied action in one statement with one action", function(done) {
+      it("string", function(done) {
+        test({
+          "Resources": {
+            "Test": {
+              "Type": "AWS::IAM::ManagedPolicy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [{
+                    "Effect": "Allow",
+                    "Action": "s3:PutObject",
+                    "Resource": "*"
+                  }]
+                }
+              }
+            }
+          }
+        }, {"iamPolicy": {"action": {"allow": ["s3:PutObject"]}}}, 0, done);
+      });
+      it("array", function(done) {
         test({
           "Resources": {
             "Test": {
@@ -219,28 +195,249 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:PutObject"]}}}, 0, done);
       });
-      it("ignore Effect := Deny", function(done) {
-        test({
-          "Resources": {
-            "Test": {
-              "Type": "AWS::IAM::ManagedPolicy",
-              "Properties": {
-                "PolicyDocument": {
-                  "Version": "2012-10-17",
-                  "Statement": [{
-                    "Effect": "Deny",
-                    "Action": [
-                      "s3:GetObject"
-                    ],
-                    "Resource": "*"
-                  }]
+      describe("allow", function() {
+        it("wildcard", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
                 }
               }
             }
-          }
-        }, {"iamPolicy": {"deny": []}}, 0, done);
+          }, {"iamPolicy": {"action": {"allow": ["s3:*"]}}}, 0, done);
+        });
+        it("not allowed action in one statement with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 1, done);
+        });
+        it("allowed action in one statement with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 0, done);
+        });
+        it("allowed - but not used - action in one statement with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
+        });
+        it("allowed actions in one statement with multiple actions", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject",
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
+        });
+        it("allowed actions in multiple statements with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }, {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
+        });
+        it("ignore Effect = Deny", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Deny",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"allow": []}}}, 0, done);
+        });
+      });
+      describe("deny", function() {
+        it("wildcard", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"deny": ["s3:*"]}}}, 1, done);
+        });
+        it("denied action in one statement with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 1, done);
+        });
+        it("not denied action in one statement with one action", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 0, done);
+        });
+        it("ignore Effect := Deny", function(done) {
+          test({
+            "Resources": {
+              "Test": {
+                "Type": "AWS::IAM::ManagedPolicy",
+                "Properties": {
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                      "Effect": "Deny",
+                      "Action": [
+                        "s3:GetObject"
+                      ],
+                      "Resource": "*"
+                    }]
+                  }
+                }
+              }
+            }
+          }, {"iamPolicy": {"action": {"deny": []}}}, 0, done);
+        });
       });
     });
   });
@@ -267,7 +464,7 @@ describe("iamPolicy", function() {
             }
           }
         }
-      }, {"iamPolicy": {"allow": []}}, 1, done);
+      }, {"iamPolicy": {"action": {"allow": []}}}, 1, done);
     });
     describe("allow", function() {
       it("not allowed action in one statement with one action", function(done) {
@@ -292,7 +489,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 1, done);
       });
       it("allowed action in one statement with one action", function(done) {
         test({
@@ -316,7 +513,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 0, done);
       });
       it("allowed - but not used - action in one statement with one action", function(done) {
         test({
@@ -340,7 +537,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in one statement with multiple actions", function(done) {
         test({
@@ -365,7 +562,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in multiple statements with one action", function(done) {
         test({
@@ -395,7 +592,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("ignore Effect = Deny", function(done) {
         test({
@@ -419,7 +616,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": []}}}, 0, done);
       });
     });
     describe("deny", function() {
@@ -445,7 +642,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 1, done);
       });
       it("not denied action in one statement with one action", function(done) {
         test({
@@ -469,7 +666,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 0, done);
       });
       it("ignore Effect := Deny", function(done) {
         test({
@@ -493,7 +690,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": []}}}, 0, done);
       });
     });
   });
@@ -520,7 +717,7 @@ describe("iamPolicy", function() {
             }
           }
         }
-      }, {"iamPolicy": {"allow": []}}, 1, done);
+      }, {"iamPolicy": {"action": {"allow": []}}}, 1, done);
     });
     describe("allow", function() {
       it("not allowed action in one statement with one action", function(done) {
@@ -545,7 +742,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 1, done);
       });
       it("allowed action in one statement with one action", function(done) {
         test({
@@ -569,7 +766,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 0, done);
       });
       it("allowed - but not used - action in one statement with one action", function(done) {
         test({
@@ -593,7 +790,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in one statement with multiple actions", function(done) {
         test({
@@ -618,7 +815,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in multiple statements with one action", function(done) {
         test({
@@ -648,7 +845,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("ignore Effect = Deny", function(done) {
         test({
@@ -672,7 +869,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": []}}}, 0, done);
       });
     });
     describe("deny", function() {
@@ -698,7 +895,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 1, done);
       });
       it("not denied action in one statement with one action", function(done) {
         test({
@@ -722,7 +919,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 0, done);
       });
       it("ignore Effect := Deny", function(done) {
         test({
@@ -746,7 +943,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": []}}}, 0, done);
       });
     });
   });
@@ -773,7 +970,7 @@ describe("iamPolicy", function() {
             }
           }
         }
-      }, {"iamPolicy": {"allow": []}}, 1, done);
+      }, {"iamPolicy": {"action": {"allow": []}}}, 1, done);
     });
     describe("allow", function() {
       it("not allowed action in one statement with one action", function(done) {
@@ -798,7 +995,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 1, done);
       });
       it("allowed action in one statement with one action", function(done) {
         test({
@@ -822,7 +1019,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 0, done);
       });
       it("allowed - but not used - action in one statement with one action", function(done) {
         test({
@@ -846,7 +1043,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in one statement with multiple actions", function(done) {
         test({
@@ -871,7 +1068,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in multiple statements with one action", function(done) {
         test({
@@ -901,7 +1098,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("ignore Effect = Deny", function(done) {
         test({
@@ -925,7 +1122,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": []}}}, 0, done);
       });
     });
     describe("deny", function() {
@@ -951,7 +1148,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 1, done);
       });
       it("not denied action in one statement with one action", function(done) {
         test({
@@ -975,7 +1172,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 0, done);
       });
       it("ignore Effect := Deny", function(done) {
         test({
@@ -999,7 +1196,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": []}}}, 0, done);
       });
     });
   });
@@ -1023,7 +1220,7 @@ describe("iamPolicy", function() {
             }
           }
         }
-      }, {"iamPolicy": {"allow": []}}, 1, done);
+      }, {"iamPolicy": {"action": {"allow": []}}}, 1, done);
     });
     describe("allow", function() {
       it("not allowed action in one statement with one action", function(done) {
@@ -1045,7 +1242,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 1, done);
       });
       it("allowed action in one statement with one action", function(done) {
         test({
@@ -1066,7 +1263,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject"]}}}, 0, done);
       });
       it("allowed - but not used - action in one statement with one action", function(done) {
         test({
@@ -1087,7 +1284,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in one statement with multiple actions", function(done) {
         test({
@@ -1109,7 +1306,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("allowed actions in multiple statements with one action", function(done) {
         test({
@@ -1136,7 +1333,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": ["s3:GetObject", "s3:PutObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": ["s3:GetObject", "s3:PutObject"]}}}, 0, done);
       });
       it("ignore Effect = Deny", function(done) {
         test({
@@ -1157,7 +1354,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"allow": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"allow": []}}}, 0, done);
       });
     });
     describe("deny", function() {
@@ -1180,7 +1377,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 1, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 1, done);
       });
       it("not denied action in one statement with one action", function(done) {
         test({
@@ -1201,7 +1398,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": ["s3:GetObject"]}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": ["s3:GetObject"]}}}, 0, done);
       });
       it("ignore Effect := Deny", function(done) {
         test({
@@ -1222,7 +1419,7 @@ describe("iamPolicy", function() {
               }
             }
           }
-        }, {"iamPolicy": {"deny": []}}, 0, done);
+        }, {"iamPolicy": {"action": {"deny": []}}}, 0, done);
       });
     });
   });

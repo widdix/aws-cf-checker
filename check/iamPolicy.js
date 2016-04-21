@@ -1,15 +1,20 @@
 /*
-Checks allowed actions of IAM policies.
+Checks allowed actions and resources of IAM policies. Wildcard * are supported.
 
 A statement with NotAction is a finding. A statement with Effect != Allow is skipped.
 
 Options: (Object)
 
-* `allow`: Array[String] List of allowed actions (whitelist)
-* `deny`: Array[String] List of denied actions (blacklist)
+* `action`: (Object)
+ * `allow`: Array[String] List of allowed actions (wildcard * can be used) (whitelist)
+ * `deny`: Array[String] List of denied actions (wildcard * can be used) (blacklist)
+* `resource`: (Object)
+ * `allow`: Array[String] List of allowed resources (wildcard * can be used) (whitelist)
+ * `deny`: Array[String] List of denied resources (wildcard * can be used) (blacklist)
 */
 
 var _ = require("lodash");
+var wildstring = require("wildstring");
 
 function filterPartResource(object) {
   "use strict";
@@ -49,6 +54,29 @@ function extractNotActions(statements) {
     .value();
 }
 
+function extractAllowedResources(statements) {
+  "use strict";
+  return _.chain(statements)
+    .filter(filterEffectAllow)
+    .filter(function(statement) {
+      return statement.Resource !== undefined;
+    })
+    .map("Resource")
+    .flatten()
+    .value();
+}
+
+function extractNotResources(statements) {
+  "use strict";
+  return _.chain(statements)
+    .filter(function(statement) {
+      return statement.NotResource !== undefined;
+    })
+    .map("NotResource")
+    .flatten()
+    .value();
+}
+
 function extractStatements(object) {
   "use strict";
   if (object.Type === "AWS::IAM::Policy" || object.Type === "AWS::IAM::ManagedPolicy") {
@@ -66,18 +94,18 @@ function extractStatements(object) {
 exports.check = function(objects, options, cb) {
   "use strict";
   var findings = [];
-  function checker(object) {
+  function actionChecker(object) {
     var statements = extractStatements(object);
     var allowedActions = extractAllowedActions(statements);
     var notActions = extractNotActions(statements);
     _.each(allowedActions, function(action) {
-      if (options.allow !== undefined && options.allow.indexOf(action) === -1) {
+      if (options.action !== undefined && options.action.allow !== undefined && _.some(options.action.allow, function(allow) { return wildstring.match(allow, action); }) === false) {
         findings.push({
           logicalID: object.LogicalId,
           message: "Action " + action + " not allowed"
         });
       }
-      if (options.deny !== undefined && options.deny.indexOf(action) !== -1) {
+      if (options.action !== undefined && options.action.deny !== undefined && _.some(options.action.deny, function(deny) { return wildstring.match(deny, action); }) === true) {
         findings.push({
           logicalID: object.LogicalId,
           message: "Action " + action + " denied"
@@ -91,10 +119,36 @@ exports.check = function(objects, options, cb) {
       });
     });
   }
+  function resourceChecker(object) {
+    var statements = extractStatements(object);
+    var allowedResources = extractAllowedResources(statements);
+    var notResources = extractNotResources(statements);
+    _.each(allowedResources, function(resource) {
+      if (options.resource !== undefined && options.resource.allow !== undefined && _.some(options.resource.allow, function(allow) { return wildstring.match(allow, resource); }) === false) {
+        findings.push({
+          logicalID: object.LogicalId,
+          message: "Resource " + resource + " not allowed"
+        });
+      }
+      if (options.resource !== undefined && options.resource.deny !== undefined && _.some(options.resource.deny, function(deny) { return wildstring.match(deny, resource); }) === true) {
+        findings.push({
+          logicalID: object.LogicalId,
+          message: "Resource " + resource + " denied"
+        });
+      }
+    });
+    _.each(notResources, function(resource) {
+      findings.push({
+        logicalID: object.LogicalId,
+        message: "NotResource " + resource + " is not allowed"
+      });
+    });
+  }
   _.chain(objects)
     .filter(filterPartResource)
     .filter(filterTypeIamEntity)
-    .each(checker)
+    .each(actionChecker)
+    .each(resourceChecker)
     .value();
   cb(null, findings);
 };

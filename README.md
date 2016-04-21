@@ -147,11 +147,15 @@ Options: (Boolean)
 
 ### iamPolicy
 
-Checks allowed actions of IAM policies.
+Checks allowed actions and resources of IAM policies. Wildcard * are supported.
 
 A statement with NotAction is a finding. A statement with Effect != Allow is skipped.
 
 Options: (Object)
 
-* `allow`: Array[String] List of allowed actions (whitelist)
-* `deny`: Array[String] List of denied actions (blacklist)
+* `action`: (Object)
+ * `allow`: Array[String] List of allowed actions (wildcard * can be used) (whitelist)
+ * `deny`: Array[String] List of denied actions (wildcard * can be used) (blacklist)
+* `resource`: (Object)
+ * `allow`: Array[String] List of allowed resources (wildcard * can be used) (whitelist)
+ * `deny`: Array[String] List of denied resources (wildcard * can be used) (blacklist)
