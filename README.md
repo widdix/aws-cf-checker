@@ -67,7 +67,7 @@ var template = {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "minimal template"
 };
-checker.checkFile(template, {"logicalID": {}}, function(err, findings) {
+checker.checkTemplate(template, {"logicalID": {}}, function(err, findings) {
   if (err) {
     throw err;
   } else {
