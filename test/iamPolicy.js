@@ -33,7 +33,7 @@ function suite(templateJSON, done) {
         }]
       }), {"iamPolicy": {"allow": [{"action": "*", "resource": "arn:aws:s3:::*"}]}}, 1, done);
     });
-    it("string", function(done) {
+    it("string in template", function(done) {
       test(wrap({
         "Version": "2012-10-17",
         "Statement": [{
@@ -45,7 +45,7 @@ function suite(templateJSON, done) {
         }]
       }), {"iamPolicy": {"allow": [{"action": "*", "resource": "arn:aws:s3:::*"}]}}, 0, done);
     });
-    it("array", function(done) {
+    it("array in template", function(done) {
       test(wrap({
         "Version": "2012-10-17",
         "Statement": [{
@@ -58,6 +58,46 @@ function suite(templateJSON, done) {
           ]
         }]
       }), {"iamPolicy": {"allow": [{"action": "*", "resource": "arn:aws:s3:::*"}]}}, 0, done);
+    });
+    it("string in action", function(done) {
+      test(wrap({
+        "Version": "2012-10-17",
+        "Statement": [{
+          "Effect": "Allow",
+          "Action": "s3:PutObject",
+          "Resource": "arn:aws:s3:::name-of-bucket"
+        }]
+      }), {"iamPolicy": {"allow": [{"action": "s3:PutObject", "resource": "*"}]}}, 0, done);
+    });
+    it("array in action", function(done) {
+      test(wrap({
+        "Version": "2012-10-17",
+        "Statement": [{
+          "Effect": "Allow",
+          "Action": "s3:PutObject",
+          "Resource": "arn:aws:s3:::name-of-bucket"
+        }]
+      }), {"iamPolicy": {"allow": [{"action": ["s3:PutObject", "s3:DeleteObject"], "resource": "*"}]}}, 0, done);
+    });
+    it("string in resource", function(done) {
+      test(wrap({
+        "Version": "2012-10-17",
+        "Statement": [{
+          "Effect": "Allow",
+          "Action": "s3:PutObject",
+          "Resource": "arn:aws:s3:::name-of-bucket"
+        }]
+      }), {"iamPolicy": {"allow": [{"action": "*", "resource": "arn:aws:s3:::*"}]}}, 0, done);
+    });
+    it("array in resource", function(done) {
+      test(wrap({
+        "Version": "2012-10-17",
+        "Statement": [{
+          "Effect": "Allow",
+          "Action": "s3:PutObject",
+          "Resource": "arn:aws:s3:::name-of-bucket"
+        }]
+      }), {"iamPolicy": {"allow": [{"action": "*", "resource": ["arn:aws:s3:::*", "arn:aws:ec2:*:*"]}]}}, 0, done);
     });
     describe("allow", function() {
       it("allow specific s3 bucket", function(done) {

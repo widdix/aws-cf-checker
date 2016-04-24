@@ -159,8 +159,8 @@ If you `allow` something, everything that is not allowed is denied.
 Options: (Object)
 
 * `allow`: (Array[Object]) List of allowed actions & resources  (whitelist)
- * `action`: (String) IAM action (wildcard * can be used)
- * `resource`: (String) IAM resource (wildcard * can be used)
+ * `action`: (String | Array[String]) IAM action (wildcard * can be used)
+ * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)
 * `deny`: (Array[Object]) List of denied actions & resources (blacklist)
- * `action`: (String) IAM action (wildcard * can be used)
- * `resource`: (String) IAM resource (wildcard * can be used)
+ * `action`: (String | Array[String]) IAM action (wildcard * can be used)
+ * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)

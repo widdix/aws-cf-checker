@@ -10,11 +10,11 @@ If you `allow` something, everything that is not allowed is denied.
 Options: (Object)
 
 * `allow`: (Array[Object]) List of allowed actions & resources  (whitelist)
- * `action`: (String) IAM action (wildcard * can be used)
- * `resource`: (String) IAM resource (wildcard * can be used)
+ * `action`: (String | Array[String]) IAM action (wildcard * can be used)
+ * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)
 * `deny`: (Array[Object]) List of denied actions & resources (blacklist)
- * `action`: (String) IAM action (wildcard * can be used)
- * `resource`: (String) IAM resource (wildcard * can be used)
+ * `action`: (String | Array[String]) IAM action (wildcard * can be used)
+ * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)
 */
 
 var _ = require("lodash");
@@ -35,18 +35,6 @@ function filterEffectAllow(statement) {
   return statement.Effect === "Allow";
 }
 
-function extractAllowedActions(statements) {
-  "use strict";
-  return _.chain(statements)
-    .filter(filterEffectAllow)
-    .filter(function(statement) {
-      return statement.Action !== undefined;
-    })
-    .map("Action")
-    .flatten()
-    .value();
-}
-
 function extractNotActions(statements) {
   "use strict";
   return _.chain(statements)
@@ -54,18 +42,6 @@ function extractNotActions(statements) {
       return statement.NotAction !== undefined;
     })
     .map("NotAction")
-    .flatten()
-    .value();
-}
-
-function extractAllowedResources(statements) {
-  "use strict";
-  return _.chain(statements)
-    .filter(filterEffectAllow)
-    .filter(function(statement) {
-      return statement.Resource !== undefined;
-    })
-    .map("Resource")
     .flatten()
     .value();
 }
@@ -95,21 +71,29 @@ function extractStatements(object) {
   }
 }
 
+function toWildcard(input) {
+  "use strict";
+  if (input === undefined) {
+    return "*";
+  } else {
+    return input;
+  }
+}
+
+function toArray(input) {
+  "use strict";
+  if (Array.isArray(input) === false) {
+    return [input];
+  } else {
+    return input;
+  }
+}
+
 function cross(action, resource) {
   "use strict";
-  if (action === undefined) {
-    action = "*";
-  } else if (typeof action === "string") {
-    action = [action];
-  }
-  if (resource === undefined) {
-    resource = "*";
-  } else if (typeof resource === "string") {
-    resource = [resource];
-  }
   var res = [];
-  _.each(action, function(a) {
-    _.each(resource, function(r) {
+  _.each(toArray(toWildcard(action)), function(a) {
+    _.each(toArray(toWildcard(resource)), function(r) {
       res.push({"action": a, "resource": r});
     });
   });
@@ -153,7 +137,11 @@ exports.check = function(objects, options, cb) {
     } else {
       _.each(allowedActionResourcePairs, function(pair) {
         if (options.allow !== undefined && _.some(options.allow, function(allow) {
-          return wildstring.match(allow.action, pair.action) && wildstring.match(allow.resource, pair.resource);
+          return _.some(toArray(toWildcard(allow.action)), function(action) {
+            return wildstring.match(action, pair.action);
+          }) && _.some(toArray(toWildcard(allow.resource)), function(resource) {
+            return wildstring.match(resource, pair.resource);
+          });
         }) === false) {
           findings.push({
             logicalID: object.LogicalId,
@@ -161,7 +149,11 @@ exports.check = function(objects, options, cb) {
           });
         }
         if (options.deny !== undefined && _.some(options.deny, function(deny) {
-          return wildstring.match(deny.action, pair.action) && wildstring.match(deny.resource, pair.resource);
+          return _.some(toArray(toWildcard(deny.action)), function(action) {
+            return wildstring.match(action, pair.action);
+          }) && _.some(toArray(toWildcard(deny.resource)), function(resource) {
+            return wildstring.match(resource, pair.resource);
+          });
         }) === true) {
           findings.push({
             logicalID: object.LogicalId,
@@ -170,8 +162,6 @@ exports.check = function(objects, options, cb) {
         }
       });
     }
-    
-    
   }
   _.chain(objects)
     .filter(filterPartResource)
