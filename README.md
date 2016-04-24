@@ -97,8 +97,9 @@ Options: (Object)
 ### resourceType
 
 Checks if the resource types are allowed in the template.
-If you `deny` resource types everything that is not denied is allowed.
-If you `allow` resource types everything that is not allowed is denied.
+
+If you `deny` something, everything that is not denied is allowed.
+If you `allow` something, everything that is not allowed is denied.
 
 Options: (Object)
 
@@ -147,15 +148,19 @@ Options: (Boolean)
 
 ### iamPolicy
 
-Checks allowed actions and resources of IAM policies. Wildcard * are supported.
+Checks allowed actions and resources of IAM policy statements. Wildcard * is supported.
 
-A statement with NotAction is a finding. A statement with Effect != Allow is skipped.
+A statement with NotAction is a finding.
+A statement with Effect != Allow is skipped.
+
+If you `deny` something, everything that is not denied is allowed.
+If you `allow` something, everything that is not allowed is denied.
 
 Options: (Object)
 
-* `action`: (Object)
- * `allow`: Array[String] List of allowed actions (wildcard * can be used) (whitelist)
- * `deny`: Array[String] List of denied actions (wildcard * can be used) (blacklist)
-* `resource`: (Object)
- * `allow`: Array[String] List of allowed resources (wildcard * can be used) (whitelist)
- * `deny`: Array[String] List of denied resources (wildcard * can be used) (blacklist)
+* `allow`: (Array[Object]) List of allowed actions & resources  (whitelist)
+ * `action`: (String) IAM action (wildcard * can be used)
+ * `resource`: (String) IAM resource (wildcard * can be used)
+* `deny`: (Array[Object]) List of denied actions & resources (blacklist)
+ * `action`: (String) IAM action (wildcard * can be used)
+ * `resource`: (String) IAM resource (wildcard * can be used)

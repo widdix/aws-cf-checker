@@ -1,7 +1,8 @@
 /*
 Checks if the resource types are allowed in the template.
-If you `deny` resource types everything that is not denied is allowed.
-If you `allow` resource types everything that is not allowed is denied.
+
+If you `deny` something, everything that is not denied is allowed.
+If you `allow` something, everything that is not allowed is denied.
 
 Options: (Object)
 
