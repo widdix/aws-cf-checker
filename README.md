@@ -92,19 +92,19 @@ Checks logical ids of your template.
 
 Options: (Object)
 
-* `case`: Enum["pascal", "camel"] (default: "pascal")
+* `case`: (Enum["pascal", "camel"] default: "pascal")
 
 ### resourceType
 
-Checks if the resource types are allowed in the template.
+Checks if the resource types are allowed in the template. Wildcard * is supported.
 
 If you `deny` something, everything that is not denied is allowed.
 If you `allow` something, everything that is not allowed is denied.
 
 Options: (Object)
 
-* `deny`: Array[String]
-* `allow`: Array[String]
+* `deny`: (Array[String]) (whitelist, wildcard * can be used)
+* `allow`: (Array[String]) (blacklist, wildcard * can be used)
 
 ### securityGroupInbound
 
@@ -112,7 +112,7 @@ Checks that only security groups attached to:
 
 * AWS::ElasticLoadBalancing::LoadBalancer (external)
 
-allow traffic from public ip addresses.
+allow traffic from public IP addresses.
 
 Security groups attached to:
 
@@ -164,3 +164,12 @@ Options: (Object)
 * `deny`: (Array[Object]) List of denied actions & resources (blacklist)
  * `action`: (String | Array[String]) IAM action (wildcard * can be used)
  * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)
+
+### iamManagedPolicy
+
+Checks IAM Users, Groups and Roles for managed policy attachments. Wildcard * is supported.
+
+Options: (Object)
+
+* `allow`: (Array[String]) List of allowed ARNs (whitelist, wildcard * can be used)
+* `deny`: (Array[String]) List of denied ARNs (blacklist, wildcard * can be used)

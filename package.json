@@ -1,6 +1,6 @@
 {
   "name": "aws-cf-checker",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Checks AWS CloudFormation templates for security, reliability and conformity",
   "keywords": [
     "aws",
@@ -13,6 +13,7 @@
     "test": "make test"
   },
   "author": "Michael Wittig <michael@widdix.de>",
+  "contributors": ["Andreas Wittig <andreas@widdix.de>"],
   "license": "MIT",
   "dependencies": {
     "lodash": "3.10.1",
@@ -30,6 +31,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/widdix/aws-cf-checker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/widdix/aws-cf-checker/issues"
   },
   "engines": {
     "node": ">=0.10"
