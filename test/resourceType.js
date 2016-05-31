@@ -1,6 +1,6 @@
 var checker = require("../index.js");
 var assert = require("assert-plus");
-
+// TODO test wildcard
 function test(template, options, expectedFindings, done) {
   checker.checkTemplate(template, options, function(err, findings) {
     if (err) {
@@ -54,6 +54,36 @@ describe("resourceType", function() {
         }
       }, 1, done);
     });
+    it("no hit by wildcard", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "deny": ["AWS::IAM::*"]
+        }
+      }, 0, done);
+    });
+    it("hit by wildcard", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "deny": ["*"]
+        }
+      }, 1, done);
+    });
   });
   describe("allow", function() {
     it("empty", function(done) {
@@ -93,6 +123,36 @@ describe("resourceType", function() {
       }, {
         "resourceType": {
           "allow": ["AWS::EC2::VPC"]
+        }
+      }, 0, done);
+    });
+    it("hit by wildcard", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "allow": ["AWS::IAM::*"]
+        }
+      }, 1, done);
+    });
+    it("no hit by wildcard", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "allow": ["*"]
         }
       }, 0, done);
     });
