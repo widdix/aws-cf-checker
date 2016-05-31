@@ -137,10 +137,10 @@ exports.check = function(objects, options, cb) {
     } else {
       _.each(allowedActionResourcePairs, function(pair) {
         if (options.allow !== undefined && _.some(options.allow, function(allow) {
-          return _.some(toArray(toWildcard(allow.action)), function(action) {
-            return wildstring.match(action, pair.action);
-          }) && _.some(toArray(toWildcard(allow.resource)), function(resource) {
-            return wildstring.match(resource, pair.resource);
+          return _.some(toArray(toWildcard(allow.action)), function(allowAction) {
+            return wildstring.match(allowAction, pair.action);
+          }) && _.some(toArray(toWildcard(allow.resource)), function(allowResource) {
+            return wildstring.match(allowResource, pair.resource);
           });
         }) === false) {
           findings.push({
@@ -149,10 +149,10 @@ exports.check = function(objects, options, cb) {
           });
         }
         if (options.deny !== undefined && _.some(options.deny, function(deny) {
-          return _.some(toArray(toWildcard(deny.action)), function(action) {
-            return wildstring.match(action, pair.action);
-          }) && _.some(toArray(toWildcard(deny.resource)), function(resource) {
-            return wildstring.match(resource, pair.resource);
+          return _.some(toArray(toWildcard(deny.action)), function(denyAction) {
+            return wildstring.match(denyAction, pair.action);
+          }) && _.some(toArray(toWildcard(deny.resource)), function(denyResource) {
+            return wildstring.match(denyResource, pair.resource);
           });
         }) === true) {
           findings.push({

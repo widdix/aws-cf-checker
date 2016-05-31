@@ -3,7 +3,7 @@ Checks that only security groups attached to:
 
 * AWS::ElasticLoadBalancing::LoadBalancer (external)
 
-allow traffic from public ip addresses.
+allow traffic from public IP addresses.
 
 Security groups attached to:
 
