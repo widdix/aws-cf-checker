@@ -44,7 +44,29 @@ describe("iamInlinePolicy", function() {
         }
       }, {"iamInlinePolicy": false}, 1, done);
     });
-     it("with allowed inline policy", function(done) {
+    it("with allowed inline policy", function(done) {
+      test({
+        "Resources": {
+          "Test": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [{
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:ListBucket"
+                  ],
+                  "Resource": "*"
+                }]
+              }
+            }
+          }
+        }
+      }, {"iamInlinePolicy": true}, 0, done);
+    });
+    it("with default", function(done) {
       test({
         "Resources": {
           "Test": {

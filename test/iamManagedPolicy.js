@@ -58,6 +58,18 @@ describe("iamManagedPolicy", function() {
           }
         }, {"iamManagedPolicy": {allow: ["*"]}}, 0, done);
       });
+      it("one policy attached, allow []", function(done) {
+        test({
+          "Resources": {
+            "Test": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AdministratorAccess"]
+              }
+            }
+          }
+        }, {"iamManagedPolicy": {allow: []}}, 1, done);
+      });
       it("two policies attached, allow [*]", function(done) {
         test({
           "Resources": {
@@ -142,6 +154,18 @@ describe("iamManagedPolicy", function() {
             }
           }
         }, {"iamManagedPolicy": {deny: ["*"]}}, 0, done);
+      });
+      it("one policy attached, deny []", function(done) {
+        test({
+          "Resources": {
+            "Test": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AdministratorAccess"]
+              }
+            }
+          }
+        }, {"iamManagedPolicy": {deny: []}}, 0, done);
       });
       it("one policy attached, deny [*]", function(done) {
         test({
