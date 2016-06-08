@@ -15,27 +15,24 @@ Options: (Object)
  * `action`: (String | Array[String]) IAM action (wildcard * can be used)
  * `resource`: (String | Array[String]) IAM resource (wildcard * can be used)
 */
+"use strict";
 
 var _ = require("lodash");
 var wildstring = require("wildstring");
 
 function filterPartResource(object) {
-  "use strict";
   return object.Part === "Resource";
 }
 
 function filterTypeIamEntity(object) {
-  "use strict";
   return object.Type === "AWS::IAM::Group" || object.Type === "AWS::IAM::Role" || object.Type === "AWS::IAM::User" || object.Type === "AWS::IAM::Policy" || "AWS::IAM::ManagedPolicy";
 }
 
 function filterEffectAllow(statement) {
-  "use strict";
   return statement.Effect === "Allow";
 }
 
 function extractNotActions(statements) {
-  "use strict";
   return _.chain(statements)
     .filter(function(statement) {
       return statement.NotAction !== undefined;
@@ -46,7 +43,6 @@ function extractNotActions(statements) {
 }
 
 function extractNotResources(statements) {
-  "use strict";
   return _.chain(statements)
     .filter(function(statement) {
       return statement.NotResource !== undefined;
@@ -57,7 +53,6 @@ function extractNotResources(statements) {
 }
 
 function extractStatements(object) {
-  "use strict";
   if (object.Type === "AWS::IAM::Policy" || object.Type === "AWS::IAM::ManagedPolicy") {
     return object.Properties.PolicyDocument.Statement;
   } else {
@@ -71,7 +66,6 @@ function extractStatements(object) {
 }
 
 function toWildcard(input) {
-  "use strict";
   if (input === undefined) {
     return "*";
   } else {
@@ -80,7 +74,6 @@ function toWildcard(input) {
 }
 
 function toArray(input) {
-  "use strict";
   if (Array.isArray(input) === false) {
     return [input];
   } else {
@@ -89,7 +82,6 @@ function toArray(input) {
 }
 
 function cross(action, resource) {
-  "use strict";
   var res = [];
   _.each(toArray(toWildcard(action)), function(a) {
     _.each(toArray(toWildcard(resource)), function(r) {
@@ -101,7 +93,6 @@ function cross(action, resource) {
 exports.cross = cross;
 
 function extractAllowedActionResourcePairs(statements) {
-  "use strict";
   return _.chain(statements)
     .filter(filterEffectAllow)
     .map(function(statement) {
@@ -112,7 +103,6 @@ function extractAllowedActionResourcePairs(statements) {
 }
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   function checker(object) {
     var statements = extractStatements(object);

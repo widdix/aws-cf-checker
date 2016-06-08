@@ -6,21 +6,19 @@ Options: (Boolean)
 `true` := inline policies are allowed
 `false` := inline policies are denied
 */
+"use strict";
 
 var _ = require("lodash");
 
 function filterPartResource(object) {
-  "use strict";
   return object.Part === "Resource";
 }
 
 function filterTypeIamEntity(object) {
-  "use strict";
   return object.Type === "AWS::IAM::Group" || object.Type === "AWS::IAM::Role" || object.Type === "AWS::IAM::User" || object.Type === "AWS::IAM::Policy";
 }
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   function checker(object) {
     if (options === false) {

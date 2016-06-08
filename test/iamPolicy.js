@@ -1,3 +1,5 @@
+"use strict";
+
 var checker = require("../index.js");
 var assert = require("assert-plus");
 var iamPolicy = require("../check/iamPolicy.js");

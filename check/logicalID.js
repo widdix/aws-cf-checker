@@ -5,6 +5,7 @@ Options: (Object)
 
 * `case`: (Enum["pascal", "camel"] default: "pascal")
 */
+"use strict";
 
 var _ = require("lodash");
 
@@ -14,7 +15,6 @@ var CASES = {
 };
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   var c = options["case"] || "pascal";
   var regex = CASES[c];

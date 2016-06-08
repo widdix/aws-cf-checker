@@ -31,32 +31,28 @@ none
 
 // TODO what about port ranges? I think we should not allow them
 // TODO it should be possible to allow or deny ports in the options
+"use strict";
 
 var _ = require("lodash");
 var privateIpRange = require("../lib/privateIpRange.js");
 
 function filterPartResource(object) {
-  "use strict";
   return object.Part === "Resource";
 }
 
 function filterTypeSecurityGroup(object) {
-  "use strict";
   return object.Type === "AWS::EC2::SecurityGroup";
 }
 
 function filterTypeSecurityGroupIngress(object) {
-  "use strict";
   return object.Type === "AWS::EC2::SecurityGroupIngress";
 }
 
 function mapRef(entry) {
-  "use strict";
   return entry.Ref;
 }
 
 function normalizeSecurityGroupAttachmentIds(propertyName) {
-  "use strict";
   return function(object) {
     if (object.Properties[propertyName] === undefined) {
       throw new Error("can not find property " + propertyName + " in " + object.LogicalId);
@@ -66,7 +62,6 @@ function normalizeSecurityGroupAttachmentIds(propertyName) {
 }
 
 function alwaysPrivate(object) {
-  "use strict";
   return false;
 }
 
@@ -75,7 +70,6 @@ var SECURITY_GROUP_ATTACHMENT_DEFINITION = {
   "AWS::ElasticLoadBalancing::LoadBalancer": {
     "normalizationFun": normalizeSecurityGroupAttachmentIds("SecurityGroups"),
     "isPublicFun": function(object) {
-      "use strict";
       if(object.Properties.Scheme === "internal") {
         return false;
       }
@@ -108,7 +102,6 @@ var SECURITY_GROUP_ATTACHMENT_DEFINITION = {
   },
   "AWS::EC2::Instance": {
     "normalizationFun": function(object) {
-      "use strict";
       if (object.Properties.NetworkInterfaces) {
         return _.chain(object.Properties.NetworkInterfaces)
           .map("GroupSet")
@@ -127,7 +120,6 @@ var SECURITY_GROUP_ATTACHMENT_DEFINITION = {
   },
   "AWS::EC2::SpotFleet": {
     "normalizationFun": function(object) {
-      "use strict";
       return _.chain(object.Properties.SpotFleetRequestConfigData.LaunchSpecifications)
         .map("SecurityGroups")
         .flatten()
@@ -147,7 +139,6 @@ var SECURITY_GROUP_ATTACHMENT_DEFINITION = {
 };
 
 function findSecurityGroupAttachments(objects, securityGroupObject) {
-  "use strict";
   return _.chain(objects)
     .filter(filterPartResource)
     .filter(function(object) {
@@ -166,7 +157,6 @@ function findSecurityGroupAttachments(objects, securityGroupObject) {
 }
 
 function extractIngressRules(objects, securityGroupObject) {
-  "use strict";
   return _.chain(objects)
     .filter(filterPartResource)
     .filter(filterTypeSecurityGroupIngress)
@@ -180,7 +170,6 @@ function extractIngressRules(objects, securityGroupObject) {
 }
 
 function hasPublicAttachments(attachments) {
-  "use strict";
   return _.chain(attachments)
     .find(function(attachment) {
       var definition = SECURITY_GROUP_ATTACHMENT_DEFINITION[attachment.Type];
@@ -190,7 +179,6 @@ function hasPublicAttachments(attachments) {
 }
 
 function hasPrivateAttachments(attachments) {
-  "use strict";
   return _.chain(attachments)
     .find(function(attachment) {
       var definition = SECURITY_GROUP_ATTACHMENT_DEFINITION[attachment.Type];
@@ -200,7 +188,6 @@ function hasPrivateAttachments(attachments) {
 }
 
 function hasPublicRules(rules) {
-  "use strict";
   return _.chain(rules)
     .find(function(rule) {
       if (rule.CidrIp !== undefined) {
@@ -212,7 +199,6 @@ function hasPublicRules(rules) {
 }
 
 function hasPrivateRules(rules) {
-  "use strict";
   return _.chain(rules)
     .find(function(rule) {
       if (rule.SourceSecurityGroupId !== undefined) {
@@ -224,7 +210,6 @@ function hasPrivateRules(rules) {
 }
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   function checker(object) {
     var rules = extractIngressRules(objects, object);

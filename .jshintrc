@@ -59,6 +59,5 @@
 	"worker"        : false,
 	"wsh"           : false,
 	"yui"           : false,
-	"globals"       : {},
-	"predef"        : ["describe", "it", "before", "after"]
+	"globals"       : {}
 }

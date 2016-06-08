@@ -1,3 +1,5 @@
+"use strict";
+
 var privateIpRange = require("../lib/privateIpRange.js");
 var assert = require("assert-plus");
 

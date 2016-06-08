@@ -8,17 +8,16 @@ Options: (Object)
 * `deny`: (Array[String]) (whitelist, wildcard * can be used)
 * `allow`: (Array[String]) (blacklist, wildcard * can be used)
 */
+"use strict";
 
 var _ = require("lodash");
 var wildstring = require("wildstring");
 
 function filterPartResource(object) {
-  "use strict";
   return object.Part === "Resource";
 }
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   function checker(object) {
     if (_.some(options.allow, function(allow) {

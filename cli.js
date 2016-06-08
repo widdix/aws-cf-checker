@@ -1,10 +1,11 @@
 #!/usr/bin/env node
+"use strict";
+
 var checker = require("./index.js");
 var fs = require("fs");
 var argv = require("minimist")(process.argv.slice(2));
 
 function checkCallback(err, findings) {
-  "use strict";
   if (err) {
     console.error(err.message);
     process.exit(2);
@@ -19,12 +20,10 @@ function checkCallback(err, findings) {
 }
 
 function checkFile(file, options) {
-  "use strict";
   checker.checkFile(file, options, checkCallback);
 }
 
 function checkJSON(json, options) {
-  "use strict";
   checker.checkTemplate(JSON.parse(json), options, checkCallback);
 }
 
@@ -41,11 +40,9 @@ if (argv.templateFile) {
   process.stdin.resume();
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", function(chunk) {
-    "use strict";
     data += chunk;
   });
   process.stdin.on("end", function() {
-    "use strict";
     checkJSON(data, checks);
   });
 }

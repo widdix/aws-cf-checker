@@ -6,27 +6,24 @@ Options: (Object)
 * `allow`: (Array[String]) List of allowed ARNs (whitelist, wildcard * can be used)
 * `deny`: (Array[String]) List of denied ARNs (blacklist, wildcard * can be used)
 */
+"use strict";
 
 var _ = require("lodash");
 var wildstring = require("wildstring");
 
 function filterPartResource(object) {
-  "use strict";
   return object.Part === "Resource";
 }
 
 function filterTypeIamEntity(object) {
-  "use strict";
   return object.Type === "AWS::IAM::Group" || object.Type === "AWS::IAM::Role" || object.Type === "AWS::IAM::User";
 }
 
 function extractManagedPolicyARNs(object) {
-  "use strict";
   return object.Properties.ManagedPolicyArns;
 }
 
 exports.check = function(objects, options, cb) {
-  "use strict";
   var findings = [];
   function checker(object) {
     var managedPolicyARNs = extractManagedPolicyARNs(object);
