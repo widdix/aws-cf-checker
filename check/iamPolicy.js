@@ -4,8 +4,7 @@ Checks allowed actions and resources of IAM policy statements. Wildcard * is sup
 A statement with NotAction is a finding.
 A statement with Effect != Allow is skipped.
 
-If you `deny` something, everything that is not denied is allowed.
-If you `allow` something, everything that is not allowed is denied.
+By default, nothing is allowed (implicit deny). If you deny something it overrides what you allowed (explicit deny).
 
 Options: (Object)
 
@@ -136,7 +135,7 @@ exports.check = function(objects, options, cb) {
       });
     } else {
       _.each(allowedActionResourcePairs, function(pair) {
-        if (options.allow !== undefined && _.some(options.allow, function(allow) {
+        if (_.some(options.allow, function(allow) {
           return _.some(toArray(toWildcard(allow.action)), function(allowAction) {
             return wildstring.match(allowAction, pair.action);
           }) && _.some(toArray(toWildcard(allow.resource)), function(allowResource) {
@@ -148,7 +147,7 @@ exports.check = function(objects, options, cb) {
             message: "Action & Resource " + pair.action + " & " + pair.resource + " not allowed"
           });
         }
-        if (options.deny !== undefined && _.some(options.deny, function(deny) {
+        if (_.some(options.deny, function(deny) {
           return _.some(toArray(toWildcard(deny.action)), function(denyAction) {
             return wildstring.match(denyAction, pair.action);
           }) && _.some(toArray(toWildcard(deny.resource)), function(denyResource) {

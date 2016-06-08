@@ -13,13 +13,69 @@ function test(template, options, expectedFindings, done) {
 }
 
 describe("resourceType", function() {
-  describe("deny", function() {
+  describe("implicit deny", function() {
     it("empty", function(done) {
       test({
         "Resources": {
         }
       }, {
         "resourceType": {
+        }
+      }, 0, done);
+    });
+    it("nothing allowed", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+        }
+      }, 1, done);
+    });
+    it("allow wildcard does not match", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "allow": ["AWS::IAM::*"]
+        }
+      }, 1, done);
+    });
+    it("allow wildcard does match", function(done) {
+      test({
+        "Resources": {
+          "VPC": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+            }
+          }
+        }
+      }, {
+        "resourceType": {
+          "allow": ["AWS::EC2::*"]
+        }
+      }, 0, done);
+    });
+  });
+  describe("explicit deny", function() {
+    it("empty", function(done) {
+      test({
+        "Resources": {
+        }
+      }, {
+        "resourceType": {
+          "allow": ["*"],
           "deny": ["AWS::EC2::VPC"]
         }
       }, 0, done);
@@ -35,6 +91,7 @@ describe("resourceType", function() {
         }
       }, {
         "resourceType": {
+          "allow": ["*"],
           "deny": ["AWS::EC2::VPC"]
         }
       }, 0, done);
@@ -50,6 +107,7 @@ describe("resourceType", function() {
         }
       }, {
         "resourceType": {
+          "allow": ["*"],
           "deny": ["AWS::EC2::VPC"]
         }
       }, 1, done);
@@ -65,6 +123,7 @@ describe("resourceType", function() {
         }
       }, {
         "resourceType": {
+          "allow": ["*"],
           "deny": ["AWS::IAM::*"]
         }
       }, 0, done);
@@ -80,6 +139,7 @@ describe("resourceType", function() {
         }
       }, {
         "resourceType": {
+          "allow": ["*"],
           "deny": ["*"]
         }
       }, 1, done);

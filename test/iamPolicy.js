@@ -113,7 +113,7 @@ function suite(templateJSON, done) {
         }), {"iamPolicy": {"allow": [{"action": "s3:*", "resource": "arn:aws:s3:::*"}]}}, 0, done);
       });
     });
-    describe("deny", function() {
+    describe("explicit deny", function() {
       it("deny all s3 buckets", function(done) {
         test(wrap({
           "Version": "2012-10-17",
@@ -124,7 +124,7 @@ function suite(templateJSON, done) {
             ],
             "Resource": "arn:aws:s3:::name-of-bucket"
           }]
-        }), {"iamPolicy": {"deny": [{"action": "s3:*", "resource": "arn:aws:s3:::*"}]}}, 1, done);
+        }), {"iamPolicy": {"allow": ["*"], "deny": [{"action": "s3:*", "resource": "arn:aws:s3:::*"}]}}, 1, done);
       });
     });
   });
@@ -265,7 +265,51 @@ function suite(templateJSON, done) {
         }), {"iamPolicy": {"allow": []}}, 0, done);
       });
     });
-    describe("deny", function() {
+    describe("explicit deny", function() {
+      it("empty", function(done) {
+        test({
+          "Resources": {
+          }
+        }, {"iamPolicy": {}}, 0, done);
+      });
+      it("nothing allowed", function(done) {
+        test(wrap({
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Resource": "*"
+          }]
+        }), {"iamPolicy": {}}, 1, done);
+      });
+      it("allow wildcard does not match", function(done) {
+        test(wrap({
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Resource": "*"
+          }]
+        }), {"iamPolicy": {"allow": [{"action": "ec2:*", "resource": "*"}]}}, 1, done);
+      });
+      it("allow wildcard does match", function(done) {
+        test(wrap({
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Resource": "*"
+          }]
+        }), {"iamPolicy": {"allow": [{"action": "s3:*", "resource": "*"}]}}, 0, done);
+      });
+    });
+    describe("explicit deny", function() {
       it("wildcard", function(done) {
         test(wrap({
           "Version": "2012-10-17",
@@ -276,7 +320,7 @@ function suite(templateJSON, done) {
             ],
             "Resource": "*"
           }]
-        }), {"iamPolicy": {"deny": [{"action": "s3:*", "resource": "*"}]}}, 1, done);
+        }), {"iamPolicy": {"allow": ["*"], "deny": [{"action": "s3:*", "resource": "*"}]}}, 1, done);
       });
       it("denied action in one statement with one action", function(done) {
         test(wrap({
@@ -288,7 +332,7 @@ function suite(templateJSON, done) {
             ],
             "Resource": "*"
           }]
-        }), {"iamPolicy": {"deny": [{"action": "s3:GetObject", "resource": "*"}]}}, 1, done);
+        }), {"iamPolicy": {"allow": ["*"], "deny": [{"action": "s3:GetObject", "resource": "*"}]}}, 1, done);
       });
       it("not denied action in one statement with one action", function(done) {
         test(wrap({
@@ -300,7 +344,7 @@ function suite(templateJSON, done) {
             ],
             "Resource": "*"
           }]
-        }), {"iamPolicy": {"deny": [{"action": "s3:GetObject", "resource": "*"}]}}, 0, done);
+        }), {"iamPolicy": {"allow": ["*"], "deny": [{"action": "s3:GetObject", "resource": "*"}]}}, 0, done);
       });
       it("ignore Effect := Deny", function(done) {
         test(wrap({
@@ -312,7 +356,7 @@ function suite(templateJSON, done) {
             ],
             "Resource": "*"
           }]
-        }), {"iamPolicy": {"deny": []}}, 0, done);
+        }), {"iamPolicy": {"allow": ["*"], "deny": []}}, 0, done);
       });
     });
   });

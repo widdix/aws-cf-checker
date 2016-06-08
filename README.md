@@ -98,8 +98,7 @@ Options: (Object)
 
 Checks if the resource types are allowed in the template. Wildcard * is supported.
 
-If you `deny` something, everything that is not denied is allowed.
-If you `allow` something, everything that is not allowed is denied.
+By default, nothing is allowed (implicit deny). If you deny something it overrides what you allowed (explicit deny).
 
 Options: (Object)
 
@@ -153,8 +152,7 @@ Checks allowed actions and resources of IAM policy statements. Wildcard * is sup
 A statement with NotAction is a finding.
 A statement with Effect != Allow is skipped.
 
-If you `deny` something, everything that is not denied is allowed.
-If you `allow` something, everything that is not allowed is denied.
+By default, nothing is allowed (implicit deny). If you deny something it overrides what you allowed (explicit deny).
 
 Options: (Object)
 

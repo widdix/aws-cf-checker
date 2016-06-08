@@ -1,8 +1,7 @@
 /*
 Checks if the resource types are allowed in the template. Wildcard * is supported.
 
-If you `deny` something, everything that is not denied is allowed.
-If you `allow` something, everything that is not allowed is denied.
+By default, nothing is allowed (implicit deny). If you deny something it overrides what you allowed (explicit deny).
 
 Options: (Object)
 
@@ -22,7 +21,7 @@ exports.check = function(objects, options, cb) {
   "use strict";
   var findings = [];
   function checker(object) {
-    if (options.allow !== undefined && _.some(options.allow, function(allow) {
+    if (_.some(options.allow, function(allow) {
       return wildstring.match(allow, object.Type);
     }) === false) {
       findings.push({
@@ -30,7 +29,7 @@ exports.check = function(objects, options, cb) {
         message: "Resource Type " + object.Type + " not allowed"
       });
     }
-    if (options.deny !== undefined && _.some(options.deny, function(deny) {
+    if (_.some(options.deny, function(deny) {
       return wildstring.match(deny, object.Type);
     }) === true) {
       findings.push({
