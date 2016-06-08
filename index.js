@@ -36,7 +36,14 @@ function mapTemplate(template, cb) {
 
 function runChecks(objects, checks, cb) {
   async.map(Object.keys(checks), function(check, cb) {
-    require("./check/" + check + ".js").check(objects, checks[check], function(err, findings) {
+    var required;
+    try {
+      required = require("./check/" + check + ".js");
+    } catch (err) {
+      cb(err);
+      return;
+    }
+    required.check(objects, checks[check], function(err, findings) {
       if (err) {
         cb(err);
       } else {
