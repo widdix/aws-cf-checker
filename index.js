@@ -1,23 +1,22 @@
+"use strict";
+
 var fs = require("fs");
 var _ = require("lodash");
+var async = require("neo-async");
 
 function loadJSONFile(filename, cb) {
-  "use strict";
   fs.readFile(filename, {"encoding": "utf8"}, cb);
 }
 
 function parseJSON(json, cb) {
-  "use strict";
   cb(null, JSON.parse(json));
 }
 
 function clone(obj) {
-  "use strict";
   return JSON.parse(JSON.stringify(obj));
 }
 
 function mapTemplate(template, cb) {
-  "use strict";
   var objects = [];
   function mapper(part) {
     return function(object, logicalId) {
@@ -36,25 +35,24 @@ function mapTemplate(template, cb) {
 }
 
 function runChecks(objects, checks, cb) {
-  "use strict";
-  var findings = [];
-  function checkCallback(err, checkFindings) {
+  async.map(Object.keys(checks), function(check, cb) {
+    require("./check/" + check + ".js").check(objects, checks[check], function(err, findings) {
+      if (err) {
+        cb(err);
+      } else {
+        cb(null, findings);
+      }
+    });
+  }, function(err, nestedFindings) {
     if (err) {
-      return cb(err);
+      cb(err);
     } else {
-      findings = findings.concat(checkFindings);
+      cb(null, _.flatten(nestedFindings));
     }
-  }
-  for (var check in checks) {
-    if (checks.hasOwnProperty(check)) {
-      require("./check/" + check + ".js").check(objects, checks[check], checkCallback);
-    }
-  }
-  cb(null, findings);
+  });
 }
 
 function checkTemplate(template, checks, cb) {
-  "use strict";
   mapTemplate(template, function(err, objects) {
     if (err) {
       cb(err);
@@ -67,7 +65,6 @@ function checkTemplate(template, checks, cb) {
 exports.checkTemplate = checkTemplate;
 
 exports.checkFile = function(filename, checks, cb) {
-  "use strict";
   loadJSONFile(filename, function(err, json) {
     if (err) {
       cb(err);
