@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "lodash": "4.13.1",
+    "lodash": "4.17.19",
     "minimist": "1.2.0",
     "neo-async": "1.8.2",
     "netmask": "1.0.6",
